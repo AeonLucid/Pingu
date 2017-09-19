@@ -1,0 +1,54 @@
+﻿@page
+@using Pingu.Web.Pages
+@model Pingu.Web.Pages.IndexModel
+@{
+}
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <link rel="icon" href="favicon.ico">
+
+    <title>Pingu - Private server</title>
+    
+    <!-- CSS -->
+    <link rel="stylesheet" href="css/style.css"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/7.0.0/normalize.min.css" integrity="sha256-HxaKz5E/eBbvhGMNwhWRPrAR9i/lG1JeT4mD6hCQ7s4=" crossorigin="anonymous"/>
+
+    <!-- Javascript -->
+    <script src="https://ajax.googleapis.com/ajax/libs/swfobject/2.2/swfobject.js"></script>
+    <script type="text/javascript">
+        var flashvars = {
+            "language": "nl_NL",
+            "domain": "speeleiland.nl"
+        };
+
+        var params = {
+            "allowScriptAccess": "always",
+            "quality": "high",
+            "wmode": "direct",
+            "allowNetworking": "internal"
+        };
+
+        var attributes = {
+            "id": "flashobj_mc",
+            "name": "flashobj_mc",
+            "flashVars": "&user=@ViewData["Username"]&hash=@ViewData["Hash"]",
+            "class": "hide-game"
+        };
+
+        swfobject.embedSWF("flash/game.swf?surl=127.0.0.1&sport=5898&sound=1&user=@ViewData["Username"]&hash=@ViewData["Hash"]", "swf-game", "800", "800", "9.0.0", null, flashvars, params, attributes);
+    </script>
+</head>
+<body>
+    <div id="swf-game-container">
+        <div id="swf-game"></div>
+    </div>
+</body>
+</html>
