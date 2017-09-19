@@ -8,9 +8,9 @@ namespace Pingu.Net.Message.Outgoing
     {
         public OutgoingMessage Compose()
         {
-            XElement xmlMessage = new XElement(Header);
+            var xmlMessage = new XElement(Header);
 
-            foreach (Player player in PlayerRoom.Players.Values)
+            foreach (var player in PlayerRoom.Players.Values)
             {
                 xmlMessage.Add(
                     new XElement("player",
@@ -21,9 +21,7 @@ namespace Pingu.Net.Message.Outgoing
                 );
             }
 
-            OutgoingMessage outgoingMessage = new OutgoingMessage(xmlMessage);
-
-            return outgoingMessage;
+            return new OutgoingMessage(xmlMessage);
         }
     }
 }

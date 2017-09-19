@@ -1,4 +1,4 @@
-﻿using System;
+﻿using NLog;
 using Pingu.Net.Handler;
 using Pingu.Pingu;
 using Pingu.Pingu.Data;
@@ -7,27 +7,33 @@ namespace Pingu.Net.Message.Incoming
 {
     internal class MessageEventChallenge : IMessageEvent
     {
+        private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
+
         // <challenge name="AeonLucid" hash="xxxxxx" />
         public void HandleMessage(IncomingMessage message, ClientHandler clientHandler)
         {
-            string name = message.GetDocument().Attribute("name").Value;
-
-            if (!string.Equals(name, clientHandler.Username, StringComparison.CurrentCultureIgnoreCase))
+            var name = message.GetDocument()?.Attribute("name")?.Value;
+            if (name == null)
             {
-                if (PlayerRoom.HasPlayer(name))
-                {
-                    Player player = PlayerRoom.GetPlayer(name);
-                    if (player.State == PlayerState.Lobby)
-                    {
-                        Player sender = clientHandler.GetPlayer();
-                        sender.ChallengePlayer(player);
-                    }
-                }
+                clientHandler.Disconnect("Invalid MessageEventChallenge received.");
+                return;
             }
-            else
+
+            if (string.Equals(name, clientHandler.Username))
             {
-                // TODO: Send error
-                Console.WriteLine("ERROR ERROR ERROR, Username mismatch");
+                Logger.Error($"Received self challenge from {name}..?");
+                return;
+            }
+
+            if (!PlayerRoom.HasPlayer(name))
+            {
+                return;
+            }
+
+            var player = PlayerRoom.GetPlayer(name);
+            if (player.State == PlayerState.Lobby)
+            {
+                clientHandler.GetPlayer().ChallengePlayer(player);
             }
         }
     }

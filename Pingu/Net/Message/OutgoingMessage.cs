@@ -3,7 +3,7 @@ using System.Xml.Linq;
 
 namespace Pingu.Net.Message
 {
-    internal class OutgoingMessage
+    public class OutgoingMessage
     {
         private readonly XElement _xmlDocument;
 

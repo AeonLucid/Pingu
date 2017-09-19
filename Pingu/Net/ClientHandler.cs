@@ -11,7 +11,7 @@ using Pingu.Util;
 
 namespace Pingu.Net
 {
-    internal class ClientHandler
+    public class ClientHandler
     {
         public string Username;
 
@@ -85,7 +85,7 @@ namespace Pingu.Net
             }
             catch (Exception exception)
             {
-                _logger.Error("Client generated an exception.", exception);
+                _logger.Error(exception, "Client generated an exception.");
             }
             finally
             {
@@ -110,8 +110,10 @@ namespace Pingu.Net
 
         public void Disconnect(string reason = null)
         {
-            if(reason != null)
+            if (reason != null)
+            {
                 _logger.Error($"Client disconnected with reason: {reason}");
+            }
 
             _clientSocket?.Disconnect(false);
             _clientSocket?.Dispose();

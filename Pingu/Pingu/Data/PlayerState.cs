@@ -1,6 +1,6 @@
 ﻿namespace Pingu.Pingu.Data
 {
-    internal enum PlayerState
+    public enum PlayerState
     {
         Lobby,
         InGame

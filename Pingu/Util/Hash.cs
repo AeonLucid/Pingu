@@ -1,4 +1,5 @@
-﻿using System.Security.Cryptography;
+﻿using System;
+using System.Security.Cryptography;
 using System.Text;
 
 namespace Pingu.Util
@@ -7,17 +8,12 @@ namespace Pingu.Util
     {
         public static string Md5(string input)
         {
-            MD5 md5 = MD5.Create();
-            byte[] inputBytes = Encoding.ASCII.GetBytes(input);
-            byte[] hash = md5.ComputeHash(inputBytes);
-            
-            StringBuilder sb = new StringBuilder();
-            for (int i = 0; i < hash.Length; i++)
+            using (var hasher = new MD5CryptoServiceProvider())
             {
-                sb.Append(hash[i].ToString("x2"));
-            }
+                var bytes = hasher.ComputeHash(Encoding.ASCII.GetBytes(input));
 
-            return sb.ToString();
+                return BitConverter.ToString(bytes).Replace("-", "").ToLower();
+            }
         }
     }
 }

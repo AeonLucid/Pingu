@@ -1,6 +1,6 @@
 ﻿namespace Pingu.Pingu.Data
 {
-    enum PlayerStatus
+    public enum PlayerStatus
     {
         Available=0,
         Request=1,

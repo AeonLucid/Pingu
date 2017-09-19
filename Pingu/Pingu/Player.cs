@@ -7,16 +7,8 @@ using Pingu.Pingu.Data;
 
 namespace Pingu.Pingu
 {
-    class Player
+    public class Player
     {
-        public ClientHandler ClientHandler { get; }
-        public string Username { get; }
-        public string Hash { get; }
-        public PlayerStatus Status { get; }
-        public PlayerState State { get; }
-
-        private readonly List<string> _challengedPlayers; 
-
         public Player(ClientHandler clientHandler, string username, string hash, PlayerStatus status)
         {
             ClientHandler = clientHandler;
@@ -24,15 +16,26 @@ namespace Pingu.Pingu
             Hash = hash;
             Status = status;
             State = PlayerState.Lobby;
-
-            _challengedPlayers = new List<string>();
+            ChallengedPlayers = new List<string>();
         }
+
+        public ClientHandler ClientHandler { get; }
+
+        public string Username { get; }
+
+        public string Hash { get; }
+
+        public PlayerStatus Status { get; }
+
+        public PlayerState State { get; }
+
+        private List<string> ChallengedPlayers { get; }
 
         public void ChallengePlayer(Player player)
         {
-            if (!_challengedPlayers.Contains(player.Username))
+            if (!ChallengedPlayers.Contains(player.Username))
             {
-                _challengedPlayers.Add(player.Username);
+                ChallengedPlayers.Add(player.Username);
 
                 player.ClientHandler.SendMessage(PacketHandler.GetComposer<ComposerRequest>().Compose(this));
             }
@@ -44,7 +47,7 @@ namespace Pingu.Pingu
 
         public bool HasChallengedPlayer(Player player)
         {
-            return _challengedPlayers.Contains(player.Username);
+            return ChallengedPlayers.Contains(player.Username);
         }
     }
 }

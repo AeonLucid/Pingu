@@ -1,5 +1,4 @@
-﻿using System;
-using NLog;
+﻿using NLog;
 using Pingu.Net;
 using Pingu.Net.Handler;
 using Pingu.Settings;

@@ -1,5 +1,4 @@
-﻿using System;
-using Pingu.Net.Handler;
+﻿using Pingu.Net.Handler;
 using Pingu.Pingu;
 
 namespace Pingu.Net.Message.Incoming
@@ -9,22 +8,26 @@ namespace Pingu.Net.Message.Incoming
         // <msgAll name="AeonLucid" msg="hallo  " />
         public void HandleMessage(IncomingMessage message, ClientHandler clientHandler)
         {
-            string name = message.GetDocument().Attribute("name").Value;
-
-            if (name.Equals(clientHandler.Username))
+            var name = message.GetDocument()?.Attribute("name")?.Value;
+            if (name == null || !name.Equals(clientHandler.Username))
             {
-                string chatMessage = message.GetDocument().Attribute("msg").Value;
-
-                if (chatMessage.Length > 70)
-                    chatMessage = chatMessage.Substring(0, 70);
-
-                PlayerRoom.SendChatMessage(clientHandler.Username, chatMessage);
+                // Spoof attempt
+                return;
             }
-            else
+
+            var chatMessage = message.GetDocument()?.Attribute("msg")?.Value;
+            if (chatMessage == null)
             {
-                // TODO: Send error
-                Console.WriteLine("ERROR ERROR ERROR");
+                // Empty chat message
+                return;
             }
+
+            if (chatMessage.Length > 70)
+            {
+                chatMessage = chatMessage.Substring(0, 70);
+            }
+
+            PlayerRoom.SendChatMessage(clientHandler.Username, chatMessage);
         }
     }
 }
