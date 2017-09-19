@@ -1,0 +1,6 @@
+﻿Auth=auth
+Beat=beat
+MessageAll=msgAll
+Challenge=challenge
+StartGame=startGame
+Ping=ping

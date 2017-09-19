@@ -1,0 +1,8 @@
+﻿Config=config
+UserList=userList
+Warning=warning
+PlayerNew=newPlayer
+PlayerLeft=playerLeft
+MessageAll=msgAll
+Request=request
+Pong=pong
