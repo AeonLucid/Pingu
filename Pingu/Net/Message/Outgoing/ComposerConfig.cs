@@ -7,15 +7,13 @@ namespace Pingu.Net.Message.Outgoing
     {
         public OutgoingMessage Compose()
         {
-            var xmlMessage = new XElement(Header,
+            return new OutgoingMessage(new XElement(Header,
                 new XAttribute("adConfigUrl", ""),
                 new XAttribute("badWordsUrl", "https://aeonlucid.com/projects/bomberman/data/badwords.php"),
                 new XAttribute("replacementChar", "*"),
                 new XAttribute("deleteLine", true),
                 new XAttribute("floodLimit", 0)
-            );
-            
-            return new OutgoingMessage(xmlMessage);
+            ));
         }
     }
 }

@@ -8,14 +8,14 @@ namespace Pingu.Net.Message.Incoming
         // <msgAll name="AeonLucid" msg="hallo  " />
         public void HandleMessage(IncomingMessage message, ClientHandler clientHandler)
         {
-            var name = message.GetDocument()?.Attribute("name")?.Value;
+            var name = message.Document?.Attribute("name")?.Value;
             if (name == null || !name.Equals(clientHandler.Username))
             {
                 // Spoof attempt
                 return;
             }
 
-            var chatMessage = message.GetDocument()?.Attribute("msg")?.Value;
+            var chatMessage = message.Document?.Attribute("msg")?.Value;
             if (chatMessage == null)
             {
                 // Empty chat message

@@ -7,7 +7,7 @@ using Pingu.Pingu.Data;
 
 namespace Pingu.Pingu
 {
-    public class Player
+    internal class Player
     {
         public Player(ClientHandler clientHandler, string username, string hash, PlayerStatus status)
         {

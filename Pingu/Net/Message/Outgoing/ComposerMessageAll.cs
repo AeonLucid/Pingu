@@ -7,12 +7,10 @@ namespace Pingu.Net.Message.Outgoing
     {
         public OutgoingMessage Compose(string name, string message)
         {
-            var xmlMessage = new XElement(Header,
+            return new OutgoingMessage(new XElement(Header,
                 new XAttribute("name", name),
                 new XAttribute("msg", message)
-            );
-            
-            return new OutgoingMessage(xmlMessage);
+            ));
         }
     }
 }

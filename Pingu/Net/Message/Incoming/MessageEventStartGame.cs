@@ -15,7 +15,7 @@ namespace Pingu.Net.Message.Incoming
 
             if (receiver.State == PlayerState.Lobby)
             {
-                string challengerUsername = message.GetDocument().Attribute("name").Value;
+                string challengerUsername = message.Document.Attribute("name").Value;
 
                 if (PlayerRoom.HasPlayer(challengerUsername))
                 {

@@ -3,28 +3,22 @@ using System.Xml.Linq;
 
 namespace Pingu.Net.Message
 {
-    public class OutgoingMessage
+    internal class OutgoingMessage
     {
-        private readonly XElement _xmlDocument;
-
         public OutgoingMessage(XElement xmlDocument)
         {
-            _xmlDocument = xmlDocument;
+            Document = xmlDocument;
+            Header = xmlDocument.Name.LocalName;
+            Message = xmlDocument.ToString(SaveOptions.DisableFormatting) + "\0";
+            MessageBytes = Encoding.ASCII.GetBytes(Message);
         }
 
-        public string GetHeader()
-        {
-            return _xmlDocument.Name.LocalName;
-        }
+        public XElement Document { get; }
+        
+        public string Header { get; }
 
-        public string GetMessage()
-        {
-            return _xmlDocument.ToString(SaveOptions.DisableFormatting) + "\0";
-        }
+        public string Message { get; }
 
-        public byte[] GetBytes()
-        {
-            return Encoding.Default.GetBytes(GetMessage());
-        }
+        public byte[] MessageBytes { get; }
     }
 }

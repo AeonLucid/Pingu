@@ -60,7 +60,7 @@ namespace Pingu.Net.Handler
             else
             {
                 _logger.Warn($"Unknown incoming message '{incomingMessage.Header}' with {incomingMessage.Size} bytes..");
-                _logger.Warn(incomingMessage.GetDocument().ToString(SaveOptions.DisableFormatting));
+                _logger.Warn(incomingMessage.Document.ToString(SaveOptions.DisableFormatting));
             }
         }
 

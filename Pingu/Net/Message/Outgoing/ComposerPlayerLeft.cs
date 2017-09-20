@@ -8,11 +8,9 @@ namespace Pingu.Net.Message.Outgoing
     {
         public OutgoingMessage Compose(Player player)
         {
-            var xmlMessage = new XElement(Header,
+            return new OutgoingMessage(new XElement(Header,
                 new XAttribute("name", player.Username)
-            );
-
-            return new OutgoingMessage(xmlMessage);
+            ));
         }
     }
 }

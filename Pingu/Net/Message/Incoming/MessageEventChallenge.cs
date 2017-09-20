@@ -12,7 +12,7 @@ namespace Pingu.Net.Message.Incoming
         // <challenge name="AeonLucid" hash="xxxxxx" />
         public void HandleMessage(IncomingMessage message, ClientHandler clientHandler)
         {
-            var name = message.GetDocument()?.Attribute("name")?.Value;
+            var name = message.Document?.Attribute("name")?.Value;
             if (name == null)
             {
                 clientHandler.Disconnect("Invalid MessageEventChallenge received.");

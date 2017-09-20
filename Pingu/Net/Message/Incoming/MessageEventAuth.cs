@@ -13,9 +13,9 @@ namespace Pingu.Net.Message.Incoming
 
         public void HandleMessage(IncomingMessage message, ClientHandler clientHandler)
         {
-            var name = message.GetDocument()?.Attribute("name")?.Value;
-            var version = message.GetDocument()?.Attribute("version")?.Value;
-            var sso = message.GetDocument()?.Attribute("hash")?.Value;
+            var name = message.Document?.Attribute("name")?.Value;
+            var version = message.Document?.Attribute("version")?.Value;
+            var sso = message.Document?.Attribute("hash")?.Value;
 
             if (name == null || version == null || sso == null)
             {
@@ -41,10 +41,10 @@ namespace Pingu.Net.Message.Incoming
                 return;
             }
 
-            Logger.Info($"'{name}' has connected to the server.");
+            Logger.Info($"[{name}] has connected to the server.");
 
             clientHandler.Username = PlayerRoom.AddPlayer(clientHandler, name, sso, PlayerStatus.Available).Username;
-            clientHandler.SendMessages(new[]
+            clientHandler.SendMessage(new[]
             {
                 PacketHandler.GetComposer<ComposerConfig>().Compose(),
                 PacketHandler.GetComposer<ComposerUserList>().Compose(),

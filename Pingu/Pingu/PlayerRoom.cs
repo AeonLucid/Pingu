@@ -15,7 +15,8 @@ namespace Pingu.Pingu
 
         public static Player AddPlayer(ClientHandler clientHandler, string username, string hash, PlayerStatus status)
         {
-            Player player = new Player(clientHandler, username, hash, status);
+            var player = new Player(clientHandler, username, hash, status);
+
             Players.Add(username.ToLower(), player);
 
             SendMessageToAllExcept(PacketHandler.GetComposer<ComposerPlayerNew>().Compose(player), username);
@@ -30,7 +31,7 @@ namespace Pingu.Pingu
 
         public static void RemovePlayer(string username)
         {
-            Player player = GetPlayer(username);
+            var player = GetPlayer(username);
 
             SendMessageToAllExcept(PacketHandler.GetComposer<ComposerPlayerLeft>().Compose(player), username);
             Players.Remove(username.ToLower());
@@ -43,9 +44,9 @@ namespace Pingu.Pingu
 
         public static void SendChatMessage(string username, string message)
         {
-            OutgoingMessage outgoingMessage = PacketHandler.GetComposer<ComposerMessageAll>().Compose(username, message);
+            var outgoingMessage = PacketHandler.GetComposer<ComposerMessageAll>().Compose(username, message);
 
-            foreach (Player player in Players.Values.Where(p => !string.Equals(p.Username, username, StringComparison.CurrentCultureIgnoreCase)).Where(player => player.State == PlayerState.Lobby))
+            foreach (var player in Players.Values.Where(p => !string.Equals(p.Username, username, StringComparison.CurrentCultureIgnoreCase)).Where(player => player.State == PlayerState.Lobby))
             {
                 player.ClientHandler.SendMessage(outgoingMessage);
             }
@@ -53,7 +54,7 @@ namespace Pingu.Pingu
 
         private static void SendMessageToAll(OutgoingMessage outgoingMessage)
         {
-            foreach (Player player in Players.Values)
+            foreach (var player in Players.Values)
             {
                 player.ClientHandler.SendMessage(outgoingMessage);
             }
@@ -61,7 +62,7 @@ namespace Pingu.Pingu
 
         private static void SendMessageToAllExcept(OutgoingMessage outgoingMessage, string ignoreUsername)
         {
-            foreach (Player player in Players.Values.Where(p => !string.Equals(p.Username, ignoreUsername, StringComparison.CurrentCultureIgnoreCase)))
+            foreach (var player in Players.Values.Where(p => !string.Equals(p.Username, ignoreUsername, StringComparison.CurrentCultureIgnoreCase)))
             {
                 player.ClientHandler.SendMessage(outgoingMessage);
             }

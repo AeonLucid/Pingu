@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Net.Sockets;
 using System.Text;
 using System.Xml;
@@ -11,48 +12,61 @@ using Pingu.Util;
 
 namespace Pingu.Net
 {
-    public class ClientHandler
+    internal class ClientHandler : IDisposable
     {
-        public string Username;
+        private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
 
-        private readonly Logger _logger;
-        private readonly Socket _clientSocket;
-        private readonly byte[] _buffer;
-
-        public ClientHandler(Socket clientSocket)
+        public ClientHandler(Server server, Socket clientSocket)
         {
-            _logger = LogManager.GetCurrentClassLogger();
-            _logger.Debug("Initializing ClientHandler..");
+            Server = server;
+            Logger.Debug("Initializing ClientHandler..");
 
-            _clientSocket = clientSocket;
-            _buffer = new byte[1024];
+            ClientSocket = clientSocket;
+            SocketBuffer = new byte[1024];
+            Disposing = false;
         }
 
-        public void Handle()
+        public bool Disposing { get; private set; }
+
+        public Server Server { get; }
+
+        private Socket ClientSocket { get; }
+
+        private byte[] SocketBuffer { get; }
+
+        public string Username { get; set; }
+
+        public void Listen()
         {
-            WaitForData();
+            ReceiveData();
         }
 
-        private void WaitForData()
+        private void ReceiveData()
         {
-            if (_clientSocket != null && _clientSocket.Connected)
+            if (ClientSocket == null || !ClientSocket.Connected || Disposing)
             {
-                _clientSocket.BeginReceive(_buffer, 0, _buffer.Length, SocketFlags.None, ReceiveCallback, null);
+                return;
             }
+
+            ClientSocket.BeginReceive(SocketBuffer, 0, SocketBuffer.Length, SocketFlags.None, ReceiveDataCallback, null);
         }
 
-        private void ReceiveCallback(IAsyncResult ar)
+        private void ReceiveDataCallback(IAsyncResult ar)
         {
+            if (ClientSocket == null || !ClientSocket.Connected || Disposing)
+            {
+                return;
+            }
+
             try
             {
-                int bytesReceived = _clientSocket.EndReceive(ar);
-
+                var bytesReceived = ClientSocket.EndReceive(ar);
                 if (bytesReceived == 0)
                 {
+                    Logger.Info($"[{Username ?? "Anonymous"}] has disconnected from the server.");
+
                     if (Username != null)
                     {
-                        _logger.Info($"'{Username}' has disconnected from the server.");
-
                         PlayerRoom.RemovePlayer(Username);
                     }
 
@@ -60,18 +74,18 @@ namespace Pingu.Net
                     return;
                 }
 
-                byte[] packetBytes = new byte[bytesReceived];
-                Buffer.BlockCopy(_buffer, 0, packetBytes, 0, bytesReceived);
+                var packetBytes = new byte[bytesReceived];
+                Buffer.BlockCopy(SocketBuffer, 0, packetBytes, 0, bytesReceived);
 
-                string packetString = Encoding.Default.GetString(packetBytes);
                 try
                 {
-                    XElement packetXml = XElement.Parse(packetString.Substring(0, packetString.Length - 1)); // TODO: Make sure entire packet is here /0
-
+                    var packetString = Encoding.Default.GetString(packetBytes);
+                    var packetXml = XElement.Parse(packetString.Substring(0, packetString.Length - 1)); // TODO: Make sure entire packet is here /0
                     if (packetXml.Name.LocalName.Equals("policy-file-request"))
                     {
-                        _logger.Debug("Received policy request");
-                        _clientSocket.Send(Encoding.Default.GetBytes(CrossDomainPolicy.GetPolicy()));
+                        Logger.Debug("Received policy request");
+
+                        ClientSocket.Send(Encoding.Default.GetBytes(CrossDomainPolicy.GetPolicy()));
                     }
                     else
                     {
@@ -85,48 +99,72 @@ namespace Pingu.Net
             }
             catch (Exception exception)
             {
-                _logger.Error(exception, "Client generated an exception.");
+                Logger.Error(exception, "Client generated an exception.");
             }
             finally
             {
-                WaitForData();
+                ReceiveData();
             }
         }
 
         public void SendMessage(OutgoingMessage outgoingMessage)
         {
-            _clientSocket.Send(outgoingMessage.GetBytes());
-
-            _logger.Debug(Username == null
-                ? $"Sending {outgoingMessage.GetHeader()}."
-                : $"[{Username}] Sending {outgoingMessage.GetHeader()}.");
-        }
-
-        public void SendMessages(OutgoingMessage[] outgoingMessages)
-        {
-            foreach (OutgoingMessage outgoingMessage in outgoingMessages)
-                SendMessage(outgoingMessage);
-        }
-
-        public void Disconnect(string reason = null)
-        {
-            if (reason != null)
+            if (ClientSocket == null || !ClientSocket.Connected || Disposing)
             {
-                _logger.Error($"Client disconnected with reason: {reason}");
+                return;
             }
 
-            _clientSocket?.Disconnect(false);
-            _clientSocket?.Dispose();
+            ClientSocket.Send(outgoingMessage.MessageBytes);
+            
+            Logger.Debug($"[{Username ?? "Anonymous"}] Sending {outgoingMessage.Header}.");
+        }
+
+        public void SendMessage(IEnumerable<OutgoingMessage> outgoingMessages)
+        {
+            foreach (var message in outgoingMessages)
+            {
+                SendMessage(message);
+            }
+        }
+
+        public void Disconnect(string error = null)
+        {
+            if (error != null)
+            {
+                Logger.Error($"[{Username ?? "Anonymous"}] Client disconnected with error: '{error}'");
+            }
+
+            ClientSocket?.Disconnect(false);
+            ClientSocket?.Dispose();
+            Dispose(true);
         }
 
         public Player GetPlayer()
         {
-            if (Username != null)
+            if (Username == null)
             {
-                return PlayerRoom.GetPlayer(Username);
+                throw new NullReferenceException("Username was not set.");
             }
 
-            throw new NullReferenceException("Username was not set.");
+            return PlayerRoom.GetPlayer(Username);
+        }
+
+        public void Dispose(bool removeFromList)
+        {
+            Disposing = true;
+
+            if (removeFromList)
+            {
+                Server?.RemoveClient(this);
+            }
+
+            Dispose();
+        }
+
+        public void Dispose()
+        {
+            Disposing = true;
+            ClientSocket?.Dispose();
         }
     }
 }
