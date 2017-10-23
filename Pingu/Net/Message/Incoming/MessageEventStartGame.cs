@@ -10,19 +10,22 @@ namespace Pingu.Net.Message.Incoming
 
         public void HandleMessage(IncomingMessage message, ClientHandler clientHandler)
         {
-            // TODO: Start game
-            Player receiver = clientHandler.GetPlayer();
-
-            if (receiver.State == PlayerState.Lobby)
+            var receiver = clientHandler.GetPlayer();
+            if (receiver.State == PlayerState.Lobby ||
+                receiver.State == PlayerState.GameEnded)
             {
-                string challengerUsername = message.Document.Attribute("name").Value;
-
-                if (PlayerRoom.HasPlayer(challengerUsername))
+                var challengerUsername = message.Document?.Attribute("name")?.Value;
+                if (challengerUsername != null && PlayerRoom.HasPlayer(challengerUsername))
                 {
-                    Player challenger = PlayerRoom.GetPlayer(challengerUsername);
-                    if (challenger.HasChallengedPlayer(receiver))
+                    var opponent = PlayerRoom.GetPlayer(challengerUsername);
+                    if (opponent.HasChallengedPlayer(receiver))
                     {
-                        // TODO: Challenger challenged receiver.
+                        var game = new PlayerGame(receiver, opponent);
+
+                        receiver.StartGame(game);
+                        opponent.StartGame(game);
+
+                        game.Start();
                     }
                 }
             }

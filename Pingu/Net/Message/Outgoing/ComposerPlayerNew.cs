@@ -11,7 +11,7 @@ namespace Pingu.Net.Message.Outgoing
             return new OutgoingMessage(new XElement(Header,
                 new XAttribute("name", player.Username),
                 new XAttribute("skill", "0/0/0/0/0"), // TODO: Skill
-                new XAttribute("state", (int)player.Status)
+                new XAttribute("state", (int)player.Status) // TODO: Relative to current player
             ));
         }
     }

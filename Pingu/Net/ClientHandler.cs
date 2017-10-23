@@ -77,29 +77,38 @@ namespace Pingu.Net
                 var packetBytes = new byte[bytesReceived];
                 Buffer.BlockCopy(SocketBuffer, 0, packetBytes, 0, bytesReceived);
 
+                var packetString = Encoding.ASCII.GetString(packetBytes);
+
+                packetString = packetString.Substring(0, packetString.Length - 1); // TODO: Make sure entire packet is here /0
+                packetString = Constants.PacketFix.Replace(packetString, match => // Fix packet starting with numbers
+                {
+                    var replacement = Constants.PacketFixMap[match.Groups["number"].Value];
+
+                    return $"<{replacement} ";
+                });
+
                 try
                 {
-                    var packetString = Encoding.Default.GetString(packetBytes);
-                    var packetXml = XElement.Parse(packetString.Substring(0, packetString.Length - 1)); // TODO: Make sure entire packet is here /0
+                    var packetXml = XElement.Parse(packetString);
                     if (packetXml.Name.LocalName.Equals("policy-file-request"))
                     {
                         Logger.Debug("Received policy request");
 
-                        ClientSocket.Send(Encoding.Default.GetBytes(CrossDomainPolicy.GetPolicy()));
+                        ClientSocket.Send(Encoding.ASCII.GetBytes(CrossDomainPolicy.GetPolicy()));
                     }
                     else
                     {
                         PacketHandler.HandleIncomingMessage(new IncomingMessage(packetXml), this);
                     }
                 }
-                catch (XmlException)
+                catch (XmlException exception)
                 {
-                    // ignored
+                    Logger.Error(exception, $"[{Username ?? "Anonymous"}] Invalid xml was received: '{packetString}'.");
                 }
             }
             catch (Exception exception)
             {
-                Logger.Error(exception, "Client generated an exception.");
+                Logger.Error(exception, $"[{Username ?? "Anonymous"}] Client generated an exception.");
             }
             finally
             {

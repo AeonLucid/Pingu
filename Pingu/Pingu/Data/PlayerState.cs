@@ -3,6 +3,7 @@
     internal enum PlayerState
     {
         Lobby,
-        InGame
+        InGame,
+        GameEnded
     }
 }

@@ -25,11 +25,13 @@ namespace Pingu.Pingu
 
         public string Hash { get; }
 
-        public PlayerStatus Status { get; }
+        public PlayerStatus Status { get; set; }
 
-        public PlayerState State { get; }
+        public PlayerState State { get; set; }
 
         private List<string> ChallengedPlayers { get; }
+
+        public PlayerGame Game { get; private set; }
 
         public void ChallengePlayer(Player player)
         {
@@ -48,6 +50,13 @@ namespace Pingu.Pingu
         public bool HasChallengedPlayer(Player player)
         {
             return ChallengedPlayers.Contains(player.Username);
+        }
+
+        public void StartGame(PlayerGame game)
+        {
+            Game = game;
+            Status = PlayerStatus.Playing;
+            State = PlayerState.InGame;
         }
     }
 }

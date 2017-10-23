@@ -6,3 +6,4 @@ PlayerLeft=playerLeft
 MessageAll=msgAll
 Request=request
 Pong=pong
+StartGame=startGame

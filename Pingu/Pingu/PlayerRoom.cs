@@ -19,7 +19,7 @@ namespace Pingu.Pingu
 
             Players.Add(username.ToLower(), player);
 
-            SendMessageToAllExcept(PacketHandler.GetComposer<ComposerPlayerNew>().Compose(player), username);
+            SendMessageToAll(PacketHandler.GetComposer<ComposerPlayerNew>().Compose(player), username);
 
             return player;
         }
@@ -33,7 +33,7 @@ namespace Pingu.Pingu
         {
             var player = GetPlayer(username);
 
-            SendMessageToAllExcept(PacketHandler.GetComposer<ComposerPlayerLeft>().Compose(player), username);
+            SendMessageToAll(PacketHandler.GetComposer<ComposerPlayerLeft>().Compose(player), username);
             Players.Remove(username.ToLower());
         }
 
@@ -46,7 +46,7 @@ namespace Pingu.Pingu
         {
             var outgoingMessage = PacketHandler.GetComposer<ComposerMessageAll>().Compose(username, message);
 
-            foreach (var player in Players.Values.Where(p => !string.Equals(p.Username, username, StringComparison.CurrentCultureIgnoreCase)).Where(player => player.State == PlayerState.Lobby))
+            foreach (var player in Players.Values.Where(p => !string.Equals(p.Username, username)).Where(player => player.State == PlayerState.Lobby))
             {
                 player.ClientHandler.SendMessage(outgoingMessage);
             }
@@ -60,9 +60,9 @@ namespace Pingu.Pingu
             }
         }
 
-        private static void SendMessageToAllExcept(OutgoingMessage outgoingMessage, string ignoreUsername)
+        private static void SendMessageToAll(OutgoingMessage outgoingMessage, string ignoreUsername)
         {
-            foreach (var player in Players.Values.Where(p => !string.Equals(p.Username, ignoreUsername, StringComparison.CurrentCultureIgnoreCase)))
+            foreach (var player in Players.Values.Where(p => !string.Equals(p.Username, ignoreUsername)))
             {
                 player.ClientHandler.SendMessage(outgoingMessage);
             }
