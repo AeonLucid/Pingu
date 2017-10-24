@@ -11,4 +11,9 @@
   <ItemGroup>
     <None Include="wwwroot\css\site.css" />
   </ItemGroup>
+  <ItemGroup>
+    <Content Update="appsettings*.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
 </Project>

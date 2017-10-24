@@ -43,7 +43,7 @@
             "class": "hide-game"
         };
 
-        swfobject.embedSWF("flash/game.swf?surl=127.0.0.1&sport=5898&sound=1&user=@ViewData["Username"]&hash=@ViewData["Hash"]", "swf-game", "800", "800", "9.0.0", null, flashvars, params, attributes);
+        swfobject.embedSWF("flash/game.swf?surl=@ViewData["Ip"]&sport=@ViewData["Port"]&sound=1&user=@ViewData["Username"]&hash=@ViewData["Hash"]", "swf-game", "800", "800", "9.0.0", null, flashvars, params, attributes);
     </script>
 </head>
 <body>

@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Pingu.Web.Config;
 
 namespace Pingu.Web
 {
@@ -16,6 +17,7 @@ namespace Pingu.Web
 
         public void ConfigureServices(IServiceCollection services)
         {
+            services.Configure<PinguConfig>(Configuration.GetSection("Pingu"));
             services.AddMvc();
         }
 
