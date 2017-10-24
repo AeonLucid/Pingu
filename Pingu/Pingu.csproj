@@ -10,4 +10,13 @@
     <PackageReference Include="NLog" Version="5.0.0-beta10" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Update="Settings\Packets\incoming.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Settings\Packets\outgoing.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
 </Project>
