@@ -7,8 +7,6 @@ namespace Pingu
     {
         public const string Version = "1.1.0.speil";
 
-        public const string Salt = "liu7gey497t34y#YEYWye7h9y3%@&YQAyutshd";
-
         public static readonly Regex PacketFix = new Regex("<(?<number>\\d+) ", RegexOptions.Compiled);
 
         public static readonly Dictionary<string, string> PacketFixMap = new Dictionary<string, string>

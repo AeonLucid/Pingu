@@ -23,9 +23,9 @@ namespace Pingu.Net.Message.Incoming
                 return;
             }
 
-            if (!sso.Equals(Hash.Md5(Constants.Salt + name)))
+            if (!sso.Equals(Hash.Md5(Program.Config.Salt + name)))
             {
-                clientHandler.Disconnect($"SSO mismatch, received '{sso}', expected '{Hash.Md5(Constants.Salt + name)}'.");
+                clientHandler.Disconnect($"SSO mismatch, received '{sso}', expected '{Hash.Md5(Program.Config.Salt + name)}'.");
                 return;
             }
 

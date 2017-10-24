@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Diagnostics;
+using System.IO;
 using System.Threading;
+using Newtonsoft.Json;
 using NLog;
 using Pingu.Net;
 using Pingu.Net.Handler;
@@ -13,6 +15,8 @@ namespace Pingu
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
 
         private static readonly ManualResetEvent KeepRunning = new ManualResetEvent(false);
+
+        public static Config Config { get; private set; }
 
         private static void Main(string[] args)
         {
@@ -27,6 +31,9 @@ namespace Pingu
             LogManager.GetCurrentClassLogger().Debug("Configured NLog..");
 
             PacketHandler.Initialize();
+            Config = JsonConvert.DeserializeObject<Config>(
+                File.ReadAllText(Path.Combine(Environment.CurrentDirectory, "Settings", "config.json"))
+            );
 
             using (var server = new Server())
             {
